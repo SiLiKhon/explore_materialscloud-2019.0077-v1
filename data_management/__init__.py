@@ -90,9 +90,9 @@ def make_joblib_pickle(
     data = load_data(**load_data_args)
     export_path.mkdir()
 
-    for i, row in tqdm(data.iterrows(), total=len(data)):
+    for i, row in tqdm(data.iterrows(), total=len(data), desc="Writing trajectories to disc"):
         traj_data = (
-            (row["stru_db"], row["stru_id"]),
+            (row["stru_db"], row["stru_id"], row["temp"]),
             process_trajectory_node(row["traj"])
         )
         joblib.dump(traj_data, export_path / f"traj_data_{i:03d}.joblib.pkl")

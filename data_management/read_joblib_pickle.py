@@ -11,7 +11,7 @@ from tqdm.auto import tqdm
 
 def load_file(filename: Path) -> Tuple[List[Atoms], np.ndarray, np.ndarray, str, str]:
     (
-        (stru_db, stru_id),
+        (stru_db, stru_id, temperature),
         (structure_json, positions, energies, forces),
     ) = joblib.load(filename, mmap_mode="c")
     stru = AseAtomsAdaptor.get_atoms(Structure.from_str(structure_json, "json"))
@@ -23,10 +23,10 @@ def load_file(filename: Path) -> Tuple[List[Atoms], np.ndarray, np.ndarray, str,
         structures.append(stru_i)
 
     return (
-        structures, energies, forces, stru_db, stru_id
+        structures, energies, forces, stru_db, stru_id, temperature
     )
 
-def read_joblib_pickle(import_path: str) -> Dict[str, Any]:
+def read_joblib_pickle(import_path: str, merge_temperatures: bool = True) -> Dict[str, Any]:
     import_path = Path(import_path)
     assert import_path.exists()
 
@@ -35,11 +35,14 @@ def read_joblib_pickle(import_path: str) -> Dict[str, Any]:
 
     result = {}
     for f in tqdm(files):
-        structures, energies, forces, stru_db, stru_id = load_file(f)
+        structures, energies, forces, stru_db, stru_id, temperature = load_file(f)
         key = (stru_db, stru_id, str(structures[0].symbols))
+        if not merge_temperatures:
+            key = key + (temperature,)
         if key not in result:
             result[key] = (structures, energies, forces)
         else:
+            assert merge_temperatures
             result[key] = (
                 result[key][0] + structures,
                 np.concatenate([result[key][1], energies], axis=0),
