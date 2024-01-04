@@ -1,5 +1,5 @@
 if __name__ == "__main__":
-    from data_management import make_csv
+    from data_management.core import make_csv
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument("--archive", "-a", type=str, default=None)

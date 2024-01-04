@@ -1,5 +1,5 @@
 if __name__ == "__main__":
-    from data_management import make_joblib_pickle
+    from data_management.core import make_joblib_pickle
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument("--archive", "-a", type=str, default=None)
