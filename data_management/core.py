@@ -79,7 +79,8 @@ def make_joblib_pickle(
         positions = traj.get_array("positions")
         energies = traj.get_array("potential_energies") * units.Ry
         forces = traj.get_array("forces") * units.Ry / units.Bohr
-        return structure_json, positions, energies, forces
+        times_ps = traj.get_times()
+        return structure_json, positions, energies, forces, times_ps
 
     export_path = Path(export_path)
     assert not export_path.exists()
